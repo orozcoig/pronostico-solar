@@ -18,6 +18,7 @@ aparte.
 from __future__ import annotations
 
 import datetime as dt
+import pathlib
 
 import numpy as np
 import pandas as pd
@@ -389,3 +390,28 @@ def test_criterio_de_rol_regulatorio():
     assert m11_rol_expuesto_al_error("generador_no_despachado").estado is Estado.SIGUE
     assert m11_rol_expuesto_al_error("usuario_no_regulado").estado is Estado.SIGUE
     assert m11_rol_expuesto_al_error("generador_despachado").estado is Estado.SIGUE
+
+
+def test_cuaderno_colab_es_ejecutable():
+    """El .ipynb exige que cada línea de `source` termine en salto de línea.
+
+    Sin eso el archivo valida igual y hasta se ve bien en pantalla, pero al
+    ejecutar, las líneas quedan pegadas: `import afrom b import c` →
+    SyntaxError. Pasó en producción con este cuaderno. Aquí se compila el
+    código de cada celda, que es la única comprobación que lo habría atrapado.
+    """
+    import ast
+    import json
+
+    nb = json.loads(
+        (pathlib.Path(__file__).parent.parent / "colab" / "pronostico_solar.ipynb")
+        .read_text("utf-8")
+    )
+    assert nb["cells"], "el cuaderno no tiene celdas"
+    for i, c in enumerate(nb["cells"]):
+        src = c["source"]
+        assert isinstance(src, list) and src, f"celda {i} sin contenido"
+        for j, linea in enumerate(src[:-1]):
+            assert linea.endswith("\n"), f"celda {i}, línea {j} sin salto de línea"
+        if c["cell_type"] == "code":
+            ast.parse("".join(src))   # SyntaxError si las líneas quedaron pegadas
