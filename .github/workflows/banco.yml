@@ -28,7 +28,7 @@ jobs:
           cache: pip
       - run: pip install -r requirements-banco.txt
       - name: Pruebas
-        run: pytest tests/ -q -m "not lento" --tb=short
+        run: python -m pytest tests/ -q -m "not lento" --tb=short
 
   lento:
     name: Series largas (24 meses) — suciedad y estacionalidad
@@ -44,7 +44,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements-banco.txt
-      - run: pytest tests/ -q -m "lento" --tb=short
+      - run: python -m pytest tests/ -q -m "lento" --tb=short
 
   curva:
     name: Potencia diagnóstica vs. meses de historia

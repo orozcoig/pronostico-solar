@@ -22,6 +22,5 @@ dev = ["pytest>=8.0", "nbformat>=5.9"]
 [tool.setuptools]
 packages = ["banco"]
 
-[tool.pytest.ini_options]
-markers = ["lento: pruebas con series de 24 meses; fuera del CI rápido"]
-testpaths = ["tests"]
+# La configuración de pytest vive en pytest.ini, no aquí: tenerla en los dos
+# sitios hace que pytest avise «ignoring pytest config in pyproject.toml».
