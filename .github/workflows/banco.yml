@@ -1,0 +1,78 @@
+name: 🧪 Banco sintético (Fase 3)
+
+# El banco corre en cada cambio. Su métrica NO es el error de pronóstico:
+# es el acierto diagnóstico contra fallas de magnitud conocida, más el
+# control negativo. Un agente que mejora el error sin identificar la causa
+# no pasa este workflow.
+on:
+  push:
+    paths: ["banco/**", "tests/**", ".github/workflows/banco.yml"]
+  pull_request:
+    paths: ["banco/**", "tests/**"]
+  schedule:
+    - cron: "0 9 * * 1"        # lunes: incluye las pruebas lentas
+
+permissions:
+  contents: read
+
+jobs:
+  rapido:
+    name: Contrato + diagnóstico (12 meses)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-banco.txt
+      - name: Pruebas
+        run: pytest tests/ -q -m "not lento" --tb=short
+
+  lento:
+    name: Series largas (24 meses) — suciedad y estacionalidad
+    # La deriva por suciedad necesita dos ciclos bimodales completos para ser
+    # separable de la estacionalidad. No cabe en el CI de cada push.
+    if: github.event_name == 'schedule' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-banco.txt
+      - run: pytest tests/ -q -m "lento" --tb=short
+
+  curva:
+    name: Potencia diagnóstica vs. meses de historia
+    # Barre ventanas de 6 a 36 meses. Es el entregable de la Etapa 1: con qué
+    # historia se puede diagnosticar qué. Caro (decenas de minutos), semanal.
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-banco.txt
+      - name: Curva
+        run: python -m banco.curva >> "$GITHUB_STEP_SUMMARY"
+
+  tablero:
+    name: Tablero de aciertos (informativo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-banco.txt
+      - name: Calificar todos los escenarios
+        run: python -m banco.tablero >> "$GITHUB_STEP_SUMMARY"

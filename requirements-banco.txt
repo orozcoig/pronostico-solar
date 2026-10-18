@@ -1,0 +1,12 @@
+numpy>=1.26
+pandas>=2.2
+scipy>=1.11
+pvlib>=0.11
+matplotlib>=3.8
+pytest>=8.0
+# Segunda implementación independiente de los detectores. Licencias
+# verificadas desde los archivos instalados: pvanalytics MIT,
+# ruptures BSD-2, rdtools MIT, pvlib BSD-3. Todas permisivas.
+pvanalytics>=0.2
+rdtools>=3.0
+pyarrow>=16            # Apache-2.0, verificada desde el archivo instalado

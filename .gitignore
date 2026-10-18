@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.egg-info/
+build/
+dist/
+.venv/
+.env
+.DS_Store
+
+# Datos regenerables: la serie de 5 minutos pesa cientos de MB y es
+# reproducible por semilla. No va al repositorio.
+datos/
+*.pkl
+/tmp_*
+
+# artefactos/ SÍ se versiona: es lo que el Colab clona y lee. Se regenera
+# con `python -m banco.artefactos`, pero el cuaderno del cliente no debe
+# tener que regenerarlo.
+!artefactos/
+!artefactos/*.parquet
+!artefactos/*.png
+!artefactos/*.json

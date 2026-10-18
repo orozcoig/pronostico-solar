@@ -1,0 +1,16 @@
+{
+  "dias_evaluados": 144,
+  "generacion_media_diurna_kw": 165.2,
+  "mae_modelo_kw": 47.71,
+  "nmae_modelo": 0.2888,
+  "mae_mejor_linea_base_kw": 52.8,
+  "mejora_sobre_linea_base_kw": 5.08,
+  "vara_kw": 1.99,
+  "supera_la_vara": true,
+  "mae_techo_alcanzable_kw": 6.09,
+  "fraccion_error_importada_del_meteorologico": 0.872,
+  "cobertura_banda_10_90": 0.847,
+  "ancho_mediano_banda_kw": 244.3,
+  "ancho_banda_sobre_placa": 0.611,
+  "advertencia": "Cifras sobre planta SINTÉTICA de referencia. No transferibles a un sitio real. La métrica y el horizonte dependen de la Fase 1: ver DEPENDENCIAS_FASE1.md."
+}
