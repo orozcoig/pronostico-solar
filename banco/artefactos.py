@@ -24,7 +24,11 @@ import json
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("Agg")
+
+# NO se fuerza el backend "Agg". Matplotlib ya lo elige solo cuando no hay
+# pantalla —en un servidor o en integración continua—, y forzarlo rompe el uso
+# interactivo: en Colab las figuras se generaban correctamente pero no se veían
+# nunca, porque "Agg" no dibuja en pantalla y abajo se cerraba la figura.
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
@@ -66,9 +70,13 @@ def figura_pronostico(pred: pd.DataFrame, meta, dias: int = 10, archivo=None):
     ax.legend(frameon=False, fontsize=8, ncol=4)
     fig.autofmt_xdate()
     fig.tight_layout()
+    # Cerrar SOLO si se guardó a disco. Si no, se devuelve la figura para que
+    # el cuaderno la muestre: cerrarla siempre la hacía desaparecer en Colab.
     if archivo:
         fig.savefig(archivo)
-    plt.close(fig)
+        plt.close(fig)
+        return None
+    return fig
 
 
 def figura_residuo(pred: pd.DataFrame, conjunto: pd.DataFrame, meta, archivo=None):
@@ -105,9 +113,13 @@ def figura_residuo(pred: pd.DataFrame, conjunto: pd.DataFrame, meta, archivo=Non
     for a in (a1, a2):
         a.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()
+    # Cerrar SOLO si se guardó a disco. Si no, se devuelve la figura para que
+    # el cuaderno la muestre: cerrarla siempre la hacía desaparecer en Colab.
     if archivo:
         fig.savefig(archivo)
-    plt.close(fig)
+        plt.close(fig)
+        return None
+    return fig
 
 
 def figura_desempeno(ide: pd.Series, archivo=None):
@@ -121,9 +133,13 @@ def figura_desempeno(ide: pd.Series, archivo=None):
     ax.set_ylim(min(0.9, ide.min() * .98), max(1.05, ide.max() * 1.02))
     fig.autofmt_xdate()
     fig.tight_layout()
+    # Cerrar SOLO si se guardó a disco. Si no, se devuelve la figura para que
+    # el cuaderno la muestre: cerrarla siempre la hacía desaparecer en Colab.
     if archivo:
         fig.savefig(archivo)
-    plt.close(fig)
+        plt.close(fig)
+        return None
+    return fig
 
 
 def resumen_negocio(pred: pd.DataFrame, meta, mae_techo: float, vara: float,
