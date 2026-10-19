@@ -78,8 +78,11 @@ def figura_pronostico(pred: pd.DataFrame, meta, dias: int = 10, archivo=None):
         fig.savefig(archivo)
         plt.close(fig)
         return None
+    # `plt.show()` dibuja Y la celda del cuaderno muestra además lo que se
+    # devuelve: devolver la figura aquí la pintaba DOS VECES seguidas. Se
+    # muestra una sola vez y no se devuelve nada.
     plt.show()
-    return fig
+    return None
 
 
 def figura_residuo(pred: pd.DataFrame, conjunto: pd.DataFrame, meta, archivo=None):
@@ -124,8 +127,11 @@ def figura_residuo(pred: pd.DataFrame, conjunto: pd.DataFrame, meta, archivo=Non
         fig.savefig(archivo)
         plt.close(fig)
         return None
+    # `plt.show()` dibuja Y la celda del cuaderno muestra además lo que se
+    # devuelve: devolver la figura aquí la pintaba DOS VECES seguidas. Se
+    # muestra una sola vez y no se devuelve nada.
     plt.show()
-    return fig
+    return None
 
 
 def figura_desempeno(ide: pd.Series, archivo=None):
@@ -147,8 +153,11 @@ def figura_desempeno(ide: pd.Series, archivo=None):
         fig.savefig(archivo)
         plt.close(fig)
         return None
+    # `plt.show()` dibuja Y la celda del cuaderno muestra además lo que se
+    # devuelve: devolver la figura aquí la pintaba DOS VECES seguidas. Se
+    # muestra una sola vez y no se devuelve nada.
     plt.show()
-    return fig
+    return None
 
 
 def resumen_negocio(pred: pd.DataFrame, meta, mae_techo: float, vara: float,
