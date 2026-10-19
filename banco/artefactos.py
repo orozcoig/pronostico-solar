@@ -40,6 +40,19 @@ PALETA = {"real": "#8A6D1F", "relleno": "#E9C46A", "modelo": "#2A6F97",
           "banda": "#2A6F97"}
 
 
+def _a_local(df, meta):
+    """Pasa el índice a hora local del sitio, SOLO para mostrar.
+
+    El contrato guarda todo en UTC —así no hay ambigüedad— pero una figura que
+    lee un cliente colombiano es un borde del sistema, y en los bordes se
+    convierte. Mostrar "hora UTC" obliga a quien opera la planta a restar cinco
+    de cabeza, y es la clase de detalle que hace que nadie use el tablero.
+    """
+    salida = df.copy()
+    salida.index = salida.index.tz_convert(meta.zona_horaria)
+    return salida
+
+
 def _fig(ax_titulo: str, figsize=(10, 4.2)):
     fig, ax = plt.subplots(figsize=figsize, dpi=120)
     ax.set_title(ax_titulo)
@@ -53,8 +66,9 @@ def figura_pronostico(pred: pd.DataFrame, meta, dias: int = 10, archivo=None):
     Se muestran días consecutivos, no los mejores: elegir los días bonitos es
     la forma más fácil de mentir con una gráfica correcta.
     """
-    d = pred.tail(dias * 24)
-    fig, ax = _fig(f"Generación pronosticada vs. real — últimos {dias} días")
+    d = _a_local(pred.tail(dias * 24), meta)
+    fig, ax = _fig(f"Generación pronosticada vs. real — últimos {dias} días "
+                   f"(hora de {meta.zona_horaria.split('/')[-1].replace('_', ' ')})")
     if {"q10", "q90"} <= set(d.columns):
         ax.fill_between(d.index, d["q10"], d["q90"], color=PALETA["banda"], alpha=.18,
                         label="banda 10–90 %")
@@ -97,24 +111,27 @@ def figura_residuo(pred: pd.DataFrame, conjunto: pd.DataFrame, meta, archivo=Non
     j = pd.DataFrame({"e": pred[col] - pred["real"], "real": pred["real"]}).join(
         conjunto[["elevacion_sol"]], how="inner").dropna()
     j = j[j["real"] > piso]
+    j = _a_local(j, meta)
 
     fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 3.8), dpi=120)
     por_hora = j.groupby(j.index.hour)["e"]
     a1.bar(por_hora.mean().index, por_hora.apply(lambda s: s.abs().mean()),
-           color=PALETA["modelo"], alpha=.75, label="MAE")
+           color=PALETA["modelo"], alpha=.75, label="error típico")
     a1.plot(por_hora.mean().index, por_hora.mean(), color=PALETA["pers"], lw=1.6,
-            marker="o", ms=3, label="sesgo")
+            marker="o", ms=3, label="se pasa (+) / se queda corto (−)")
     a1.axhline(0, color="#999", lw=.8)
-    a1.set(title="Residuo por hora (UTC)", xlabel="hora", ylabel="kW")
+    a1.set(title="Error por hora del día (hora local)", xlabel="hora local", ylabel="kW")
     a1.legend(frameon=False, fontsize=8)
 
     bandas = pd.cut(j["elevacion_sol"], [0, 10, 20, 35, 90])
     g = j.groupby(bandas, observed=True)["e"]
     etq = [f"{int(i.left)}–{int(i.right)}°" for i in g.mean().index]
-    a2.bar(etq, g.apply(lambda s: s.abs().mean()), color=PALETA["fisico"], alpha=.8, label="MAE")
+    a2.bar(etq, g.apply(lambda s: s.abs().mean()), color=PALETA["fisico"], alpha=.8,
+           label="error típico")
     a2.plot(etq, g.mean(), color=PALETA["pers"], lw=1.6, marker="o", ms=3, label="sesgo")
     a2.axhline(0, color="#999", lw=.8)
-    a2.set(title="Residuo por elevación solar", xlabel="elevación", ylabel="kW")
+    a2.set(title="Error según qué tan alto está el sol", xlabel="altura del sol",
+           ylabel="kW")
     a2.legend(frameon=False, fontsize=8)
     for a in (a1, a2):
         a.spines[["top", "right"]].set_visible(False)
