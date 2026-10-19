@@ -159,9 +159,10 @@ natural de una banda calibrada: dice en qué horas el proveedor mismo no sabe.
   probarlo haría falta generar miembros con estructuras de error distintas
   entre sí; está documentado en `pronostico`.
 
-Ver `DEPENDENCIAS_FASE1.md` para qué número depende de qué decisión pendiente, y
-`FASE2_COSTO_DEL_ERROR.md` para qué cuesta el error de pronóstico según el rol
-regulatorio del cliente — que es lo que decide si hay proyecto.
+Ver `DEPENDENCIAS_FASE1.md` para qué número depende de qué decisión pendiente,
+`FASE2_COSTO_DEL_ERROR.md` para qué cuesta el error según el rol regulatorio del
+cliente — que es lo que decide si hay proyecto—, y `GUION_PRIMERA_REUNION.md`
+para el checklist de entrada y los tres números que van en la primera reunión.
 
 ## Licencias
 

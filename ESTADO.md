@@ -26,6 +26,10 @@ los números son del sitio sintético y no se transfieren.
 
 ---
 
+> El guion completo —checklist de cinco preguntas, qué es un ensamble explicado
+> para el cliente, quién vende pronóstico del tiempo y qué no hay que
+> prometer— está en `GUION_PRIMERA_REUNION.md`.
+
 ## Las tres preguntas de la primera reunión
 
 En este orden. Las dos primeras pueden terminar la conversación.
